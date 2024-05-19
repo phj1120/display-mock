@@ -18,12 +18,7 @@ public class TemplateEntity {
     @Id
     @GeneratedValue
     private Long templateNo;
-
     private String templateName;
-
-    @OneToMany(mappedBy = "template", fetch = LAZY)
-    private List<ShopTemplateEntity> shopTemplateList = new ArrayList<>();
-
     @OneToMany(mappedBy = "template", fetch = LAZY)
     private List<TemplateCornerEntity> cornerList = new ArrayList<>();
 }

@@ -5,18 +5,32 @@ from SHOP_ENTITY se
     left join TEMPLATE_ENTITY te on te.TEMPLATE_NO = ste.TEMPLATE_TEMPLATE_NO
     left join TEMPLATE_CORNER_ENTITY tce on tce.TEMPLATE_TEMPLATE_NO = te.TEMPLATE_NO
     left join CORNER_ENTITY ce on ce.CORNER_NO = tce.CORNER_CORNER_NO
-where SHOP_NO = '1'
+-- where SHOP_NO = '1'
 ;
 
 select
-    se1_0.shop_no,
-    se1_0.shop_name
+    t1_0.template_no,
+    cl1_0.template_template_no,
+    cl1_0.template_corner_no,
+    c1_0.corner_no,
+    c1_0.corner_name,
+    cl1_0.template_corner_name,
+    t1_0.template_name
 from
-    shop_entity se1_0
-        left join shop_template_entity stl1_0 on se1_0.shop_no=stl1_0.shop_shop_no
-        left join template_entity t1_0 on t1_0.template_no=stl1_0.template_template_no
-        left join template_corner_entity cl1_0 on t1_0.template_no=cl1_0.template_template_no
-where se1_0.shop_no=1
+    shop_template_entity ste1_0
+        left join
+    template_entity t1_0
+    on t1_0.template_no=ste1_0.template_template_no
+        left join
+    template_corner_entity cl1_0
+    on t1_0.template_no=cl1_0.template_template_no
+        left join
+    corner_entity c1_0
+    on c1_0.corner_no=cl1_0.corner_corner_no
+where
+        ste1_0.shop_shop_no=1
+order by
+    ste1_0.shop_template_no desc
 
 
 // 세트 추가 후. 매장 번호로 코너에 꽂힌 정보 조회

@@ -1,14 +1,11 @@
 package com.displayapi.displayapi.entity.display;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -20,7 +17,4 @@ public class CornerEntity {
     private Long cornerNo;
 
     private String cornerName;
-
-    @OneToMany(fetch = LAZY, mappedBy = "corner")
-    private List<TemplateCornerEntity> templateCornerList = new ArrayList<>();
 }

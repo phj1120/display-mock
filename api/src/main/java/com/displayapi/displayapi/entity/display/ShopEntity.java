@@ -21,7 +21,4 @@ public class ShopEntity {
     private String shopName;
 
     // TODO 전시카테고리, 브랜드 추가.
-
-    @OneToMany(mappedBy = "shop", fetch = LAZY)
-    private List<ShopTemplateEntity> shopTemplateList;
 }

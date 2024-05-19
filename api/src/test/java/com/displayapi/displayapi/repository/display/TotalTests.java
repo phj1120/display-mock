@@ -12,13 +12,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static com.displayapi.displayapi.entity.display.QCornerEntity.cornerEntity;
-import static com.displayapi.displayapi.entity.display.QShopEntity.shopEntity;
 import static com.displayapi.displayapi.entity.display.QShopTemplateEntity.shopTemplateEntity;
 import static com.displayapi.displayapi.entity.display.QTemplateCornerEntity.templateCornerEntity;
 import static com.displayapi.displayapi.entity.display.QTemplateEntity.templateEntity;
+import static com.querydsl.jpa.JPAExpressions.select;
 
 @Slf4j
 @Transactional
@@ -39,12 +40,16 @@ public class TotalTests {
     @Autowired
     private CornerRepository cornerRepository;
 
+    Long shopNo;
+
     @BeforeEach
     void beforeEach() {
         // 매장 등록
         ShopEntity shopEntity1 = new ShopEntity();
         shopEntity1.setShopName("매장1");
         shopRepository.save(shopEntity1);
+
+        shopNo = shopEntity1.getShopNo();
 
         // 코너 등록
         CornerEntity cornerEntity1 = new CornerEntity();
@@ -55,7 +60,8 @@ public class TotalTests {
         cornerEntity2.setCornerName("코너2");
         cornerRepository.save(cornerEntity2);
 
-        // 템플릿 등록
+        // 템플릿1
+        // 등록
         TemplateEntity templateEntity1 = new TemplateEntity();
         templateEntity1.setTemplateName("템플릿1");
         templateRepository.save(templateEntity1);
@@ -74,11 +80,31 @@ public class TotalTests {
         templateCornerEntity1.setCorner(cornerEntity1);
         templateCornerRepository.save(templateCornerEntity1);
 
+        // 템플릿 2
+        // 등록
+        TemplateEntity templateEntity2 = new TemplateEntity();
+        templateEntity2.setTemplateName("템플릿2");
+        templateRepository.save(templateEntity2);
+
+        // 매장과 템플릿 매핑
+        ShopTemplateEntity shopTemplateEntity2 = new ShopTemplateEntity();
+        shopTemplateEntity2.setShopTemplateName("매장1 - 템플릿2");
+        shopTemplateEntity2.setTemplate(templateEntity2);
+        shopTemplateEntity2.setShop(shopEntity1);
+        shopTemplateRepository.save(shopTemplateEntity2);
+
+        // 템플릿과 코너 매핑
         TemplateCornerEntity templateCornerEntity2 = new TemplateCornerEntity();
-        templateCornerEntity2.setTemplateCornerName("템플릿1 - 코너2");
-        templateCornerEntity2.setTemplate(templateEntity1);
-        templateCornerEntity2.setCorner(cornerEntity2);
+        templateCornerEntity2.setTemplateCornerName("템플릿2 - 코너1");
+        templateCornerEntity2.setTemplate(templateEntity2);
+        templateCornerEntity2.setCorner(cornerEntity1);
         templateCornerRepository.save(templateCornerEntity2);
+
+        TemplateCornerEntity templateCornerEntity3 = new TemplateCornerEntity();
+        templateCornerEntity3.setTemplateCornerName("템플릿2 - 코너2");
+        templateCornerEntity3.setTemplate(templateEntity2);
+        templateCornerEntity3.setCorner(cornerEntity2);
+        templateCornerRepository.save(templateCornerEntity3);
 
         entityManager.flush();
         entityManager.clear();
@@ -96,7 +122,6 @@ public class TotalTests {
      */
     @Test
     void test() {
-        long shopNo = 1L;
 //        List<ShopEntity> shopEntities = queryFactory
 //                .select(shopEntity)
 //                .from(shopEntity)
@@ -104,18 +129,6 @@ public class TotalTests {
 //                .leftJoin(shopTemplateEntity.template, templateEntity)
 //                .leftJoin(templateEntity.cornerList, templateCornerEntity)
 //                .leftJoin(templateCornerEntity.corner, cornerEntity)
-//                .where(shopEntity.shopNo.eq(shopNo))
-//                .fetch();
-
-        // 반대 순서로 가보려 했는데, 어려움. on 으로 도전
-//        List<ShopEntity> shopEntities = queryFactory
-//                .select(shopEntity)
-//                .from(shopTemplateEntity)
-//                .leftJoin(shopTemplateEntity.shop, shopEntity)
-//                .leftJoin(shopTemplateEntity.template, templateEntity)
-//                .leftJoin(templateCornerEntity.template, templateEntity)
-////                .leftJoin(templateEntity.cornerList, templateCornerEntity)
-////                .leftJoin(templateCornerEntity.corner, cornerEntity)
 //                .where(shopEntity.shopNo.eq(shopNo))
 //                .fetch();
 
@@ -130,28 +143,90 @@ public class TotalTests {
 //                .where(shopEntity.shopNo.eq(shopNo))
 //                .fetch();
 
-        List<ShopEntity> shopEntities = queryFactory.select(shopEntity)
-                .from(shopEntity)
-                .leftJoin(shopEntity.shopTemplateList, shopTemplateEntity)
-                .leftJoin(shopTemplateEntity.template, templateEntity)
-                .leftJoin(templateEntity.cornerList, templateCornerEntity).fetchJoin()
-                .leftJoin(templateCornerEntity.corner, cornerEntity)
-                .where(shopEntity.shopNo.eq(shopNo))
+//        for (ShopEntity shop : shopEntities) {
+//            List<ShopTemplateEntity> shopTemplateList = shop.getShopTemplateList();
+//            for (ShopTemplateEntity shopTemplate : shopTemplateList) {
+//                TemplateEntity template = shopTemplate.getTemplate();
+//                List<TemplateCornerEntity> cornerList = template.getCornerList();
+//                for (TemplateCornerEntity templateCorner : cornerList) {
+//                    CornerEntity corner = templateCorner.getCorner();
+//                    String cornerName = corner.getCornerName();
+//                    log.info("cornerName: {}", cornerName);
+//                }
+//            }
+//        }
+
+        log.info("FINISH");
+    }
+
+    /**
+     * 한방 쿼리로 정보 다 가져오려 했는데, 생각처럼 안 됨.
+     * 단방향 매핑으로 바꾸고, 필요시 양방향 매핑으로 변경 하는거로 엔티티 수정 함
+     */
+    @Commit
+    @Test
+    void test2() {
+        // 매장 정보
+        //      템플릿 정보
+        //          코너 정보
+
+        // 매장 템플릿 에서 매장에 해당하는 템플릿 조회
+        List<ShopTemplateEntity> templates = queryFactory
+                .select(shopTemplateEntity)
+                .from(shopTemplateEntity)
+                .leftJoin(shopTemplateEntity.template, templateEntity).fetchJoin()
+                .where(shopTemplateEntity.shop.shopNo.eq(shopNo))
+                .fetch();
+        templates.sort(Comparator.comparing(ShopTemplateEntity::getShopTemplateNo).reversed());
+        TemplateEntity template = templates.get(0).getTemplate();
+
+        // 템플릿에 매핑된 코너 조회.
+        Long templateNo = template.getTemplateNo();
+        List<TemplateCornerEntity> templateCorners = queryFactory
+                .select(templateCornerEntity)
+                .from(templateCornerEntity)
+                .leftJoin(templateCornerEntity.corner, cornerEntity).fetchJoin()
+                .where(templateCornerEntity.template.templateNo.eq(templateNo))
                 .fetch();
 
-        for (ShopEntity shop : shopEntities) {
-            List<ShopTemplateEntity> shopTemplateList = shop.getShopTemplateList();
-            for (ShopTemplateEntity shopTemplate : shopTemplateList) {
-                TemplateEntity template = shopTemplate.getTemplate();
-                List<TemplateCornerEntity> cornerList = template.getCornerList();
-                for (TemplateCornerEntity templateCorner : cornerList) {
-                    CornerEntity corner = templateCorner.getCorner();
-                    String cornerName = corner.getCornerName();
-                    log.info("cornerName: {}", cornerName);
-                }
-            }
+        for (TemplateCornerEntity templateCorner : templateCorners) {
+            log.info("templateCornerName: {}", templateCorner.getTemplateCornerName());
+            CornerEntity corner = templateCorner.getCorner();
+            log.info("cornerName: {}", corner.getCornerName());
         }
+        log.info("FINISH");
+    }
 
+    /**
+     * join 시점에 sub query 로 가장 최근의 shopTemplate 만 조회하는 로직 추가 하고 싶은데 안되서,
+     * where 절에 추가.
+     */
+    @Test
+    void test3() {
+        QShopTemplateEntity shopTemplateSub = new QShopTemplateEntity("shopTemplateSub");
+        List<TemplateCornerEntity> templateCorners = queryFactory
+                .select(templateCornerEntity)
+                .from(templateCornerEntity)
+                .leftJoin(templateCornerEntity.template, templateEntity)
+                .leftJoin(shopTemplateEntity).on(
+                        shopTemplateEntity.template.templateNo.eq(templateEntity.templateNo)
+                )
+                .leftJoin(templateCornerEntity.corner, cornerEntity).fetchJoin()
+                .where(
+                        shopTemplateEntity.shopTemplateNo.eq(
+                                select(shopTemplateSub.shopTemplateNo.max())
+                                        .from(shopTemplateSub)
+                                        .where(shopTemplateSub.shop.shopNo.eq(shopNo)
+                                )
+                        )
+                )
+                .fetch();
+
+        for (TemplateCornerEntity templateCorner : templateCorners) {
+            log.info("templateCornerName: {}", templateCorner.getTemplateCornerName());
+            CornerEntity corner = templateCorner.getCorner();
+            log.info("cornerName: {}", corner.getCornerName());
+        }
         log.info("FINISH");
     }
 }
