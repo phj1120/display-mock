@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,9 +39,8 @@ public class TotalTests {
     @Autowired
     private CornerRepository cornerRepository;
 
-    Long shopNo;
+    Long shopNo = 1L;
 
-    @BeforeEach
     void beforeEach() {
         // 매장 등록
         ShopEntity shopEntity1 = new ShopEntity();
@@ -207,7 +205,7 @@ public class TotalTests {
         List<TemplateCornerEntity> templateCorners = queryFactory
                 .select(templateCornerEntity)
                 .from(templateCornerEntity)
-                .leftJoin(templateCornerEntity.template, templateEntity)
+                .leftJoin(templateCornerEntity.template, templateEntity).fetchJoin()
                 .leftJoin(shopTemplateEntity).on(
                         shopTemplateEntity.template.templateNo.eq(templateEntity.templateNo)
                 )
