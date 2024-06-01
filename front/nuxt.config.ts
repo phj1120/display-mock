@@ -6,4 +6,8 @@ export default defineNuxtConfig({
   //     baseURL: process.env.BASE_URL || 'http://localhost:8080/',
   //   },
   // },
+  components: {
+    global: true,
+    dirs: ['~/components'],
+  },
 })
