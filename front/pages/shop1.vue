@@ -4,19 +4,19 @@ const shopModel = ref({
   shopNm: 'shop1',
   template: {
     templateNo: '1',
-    templateNm: 'template1',
-    templateId: 'Template1',
+    templateNm: '템플릿1',
+    templateId: 'template1',
   },
   corners: [
     {
       cornerNo: '1',
-      cornerNm: 'corner1',
-      cornerId: 'Corner1',
+      cornerNm: '코너1',
+      cornerId: 'corner1',
     },
     {
       cornerNo: '2',
-      cornerNm: 'corner2',
-      cornerId: 'Corner2',
+      cornerNm: '코너2',
+      cornerId: 'corner2',
     }
   ]
 });
@@ -26,7 +26,7 @@ const templateId = computed(() => {
 </script>
 
 <template>
-  <h1>shop</h1>
+  <h1>shop1</h1>
   <component :is="templateId"
              :shopModel="shopModel">
   </component>
