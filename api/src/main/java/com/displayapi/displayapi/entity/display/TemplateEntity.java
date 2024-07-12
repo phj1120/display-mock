@@ -14,11 +14,22 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "template")
+@SequenceGenerator(
+        name = "TEMPLATE_GENERATOR",
+        sequenceName = "template_seq01",
+        initialValue = 1,
+        allocationSize = 1
+)
 public class TemplateEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEMPLATE_GENERATOR")
     private Long templateNo;
+
     private String templateName;
+
+    private String templateId;
+
     @OneToMany(mappedBy = "template", fetch = LAZY)
     private List<TemplateCornerEntity> cornerList = new ArrayList<>();
 }

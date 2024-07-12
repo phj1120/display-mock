@@ -11,9 +11,16 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "shop_template")
+@SequenceGenerator(
+        name = "SHOP_TEMPLATE_GENERATOR",
+        sequenceName = "shop_template_seq01",
+        initialValue = 1,
+        allocationSize = 1
+)
 public class ShopTemplateEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SHOP_TEMPLATE_GENERATOR")
     private Long shopTemplateNo;
 
     private String shopTemplateName;

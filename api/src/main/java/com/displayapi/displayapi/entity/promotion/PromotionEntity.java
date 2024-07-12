@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PromotionEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long promotionNo;
 
     private String name;

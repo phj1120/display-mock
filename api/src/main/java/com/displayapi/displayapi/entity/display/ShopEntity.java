@@ -13,9 +13,16 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "shop")
+@SequenceGenerator(
+        name = "SHOP_GENERATOR",
+        sequenceName = "shop_seq01",
+        initialValue = 1,
+        allocationSize = 1
+)
 public class ShopEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SHOP_GENERATOR")
     private Long shopNo;
 
     private String shopName;
