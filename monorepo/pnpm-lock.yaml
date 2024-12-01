@@ -43,6 +43,9 @@ importers:
 
   apps/sub-app:
     dependencies:
+      '@local/shared-ui':
+        specifier: workspace:*
+        version: link:../shared-ui
       nuxt:
         specifier: ^3.14.1592
         version: 3.14.1592(@parcel/watcher@2.5.0)(@types/node@22.10.1)(eslint@9.16.0(jiti@2.4.1))(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.27.4)(terser@5.36.0)(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.1)(terser@5.36.0))
