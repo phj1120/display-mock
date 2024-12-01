@@ -5,11 +5,9 @@
   "main": "index.js",
   "scripts": {
     "packages": "pnpm --filter",
-    "app": "pnpm packages main-app",
-    "start": "pnpm --stream -r run dev",
-    "dev": "pnpm -r dev",
-    "build": "pnpm -r build",
-    "clean": "pnpm -r run clean"
+    "main": "pnpm --filter main-app",
+    "sub": "pnpm --filter sub-app",
+    "clean": "rm -rf node_modules && pnpm -r exec rm -rf node_modules"
   },
   "keywords": [],
   "author": "",

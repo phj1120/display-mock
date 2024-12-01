@@ -2,7 +2,7 @@
 </script>
 
 <template>
-   Index Page
+  main-app-index
   <SharedComponent1/>
 </template>
 

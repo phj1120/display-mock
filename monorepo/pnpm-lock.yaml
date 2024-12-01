@@ -11,7 +11,7 @@ importers:
   apps/main-app:
     dependencies:
       '@local/shared-ui':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../shared-ui
       nuxt:
         specifier: ^3.14.1592
@@ -44,7 +44,7 @@ importers:
   apps/sub-app:
     dependencies:
       '@local/shared-ui':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../shared-ui
       nuxt:
         specifier: ^3.14.1592
