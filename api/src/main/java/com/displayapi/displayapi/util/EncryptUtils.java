@@ -9,7 +9,7 @@ public class EncryptUtils {
         try {
             T decryptObj = clazz.getDeclaredConstructor().newInstance();
             ReflectionUtils.doWithFields(clazz, (field) -> {
-                field.setAccessible(true);
+                ReflectionUtils.makeAccessible(field);
                 Object fieldObject = ReflectionUtils.getField(field, original);
                 if (fieldObject instanceof String fieldString) {
                     ReflectionUtils.setField(field, decryptObj, AESCipher.decrypt(fieldString));
